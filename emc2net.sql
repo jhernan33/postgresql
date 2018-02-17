@@ -231,3 +231,6 @@ VALUES
 	END
  ) AS net_price
 FROM items;
+
+-- Erase schema
+drop schema audit cascade;
