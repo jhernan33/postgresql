@@ -198,3 +198,36 @@ from emc2net.pc as a
 inner join emc2net.cpu as b on (a.cpu_id = b.cpu_id)
 group by b.cpu_fabricante
 order by total desc;
+
+select coalesce(1,2);
+select coalesce(null,2,1);
+select coalesce(3,2,1);
+select coalesce(excerpt, left(content,150)) from post;
+
+-- Coalesce Example
+create table items(
+id serial primary key,
+product varchar(100) not null,
+price numeric not null,
+discount numeric
+);
+
+INSERT INTO items (product, price, discount)
+VALUES
+ ('A', 1000 ,10),
+ ('B', 1500 ,20),
+ ('C', 800 ,5),
+ ('D', 500, NULL);
+
+ select * from items;
+
+ SELECT product, (price - discount) AS net_price FROM items;
+ SELECT product, (price - COALESCE(discount,0)) AS net_price FROM items;
+
+ SELECT product,(price - 
+	CASE WHEN discount IS NULL THEN 0
+	ELSE
+	discount
+	END
+ ) AS net_price
+FROM items;
