@@ -43,6 +43,8 @@ WHERE c.relname = 'distributors' AND c.oid = d.adrelid AND d.adnum = 1
 grant select on distributors to public;
 grant select, update, insert on distributors to postgres;
 grant select (did), update (did) on distributors to hernan;
+grant update (did) on distributors to friends;
+grant select (did), insert(did), update(did) on distributors to hernan;
 
 -- List Permissions on the table
 select * from information_schema.role_table_grants where grantee='hernan';
@@ -134,3 +136,18 @@ comment on column admin.object_privileges.owner is '"*" after the
 owner indicates that the owner is a superuser';
 comment on column admin.object_privileges.objuser is '"*" after the
 objuser indicates that the objuser is a superuser';
+
+-- How to get the permissions assigned to user?
+SELECT n.nspname as "public",
+  c.relname as "Name",
+  CASE c.relkind WHEN 'r' THEN 'distributors' WHEN 'v' THEN 'view' WHEN 'S'
+THEN 'sequence' END as "Type",
+  pg_catalog.array_to_string(c.relacl, E'\n') AS "Access privileges",
+  pg_catalog.array_to_string(ARRAY(
+    SELECT attname || E':\n  ' || pg_catalog.array_to_string(attacl, E'\n  ')
+    FROM pg_catalog.pg_attribute a
+    WHERE attrelid = c.oid AND NOT attisdropped AND attacl IS NOT NULL
+  ), E'\n') AS "Column access privileges"
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+WHERE c.relkind IN ('r', 'v', 'S') ORDER BY 1, 2;
