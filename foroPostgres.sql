@@ -151,3 +151,9 @@ THEN 'sequence' END as "Type",
 FROM pg_catalog.pg_class c
      LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
 WHERE c.relkind IN ('r', 'v', 'S') ORDER BY 1, 2;
+
+-- Missing toast table for pg_policy
+select relname, attname, atttypid::regtype
+from pg_class c join pg_attribute a on c.oid = attrelid
+where c.oid < 16384 and reltoastrelid=0 and relkind = 'r' and attstorage != 'p'
+order by 1,2;
