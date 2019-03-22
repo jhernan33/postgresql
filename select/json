@@ -1,0 +1,249 @@
+Select to Json (https://stackoverflow.com/questions/24006291/postgresql-return-result-set-as-json-array/24006432)
+
+
+PostgreSQL return result set as JSON array?
+Ask Question
+82
+
+I would like to have PostgreSQL return the result of a query as one JSON array. Given
+
+create table t (a int primary key, b text);
+
+insert into t values (1, 'value1');
+insert into t values (2, 'value2');
+insert into t values (3, 'value3');
+
+I would like something similar to
+
+[{"a":1,"b":"value1"},{"a":2,"b":"value2"},{"a":3,"b":"value3"}]
+
+or
+
+{"a":[1,2,3], "b":["value1","value2","value3"]}
+
+(actually it would be more useful to know both). I have tried some things like
+
+select row_to_json(row) from (select * from t) row;
+select array_agg(row) from (select * from t) row;
+select array_to_string(array_agg(row), '') from (select * from t) row;
+
+And I feel I am close, but not there really. Should I be looking at other documentation except for 9.15. JSON Functions and Operators?
+
+By the way, I am not sure about my idea. Is this a usual design decision? My thinking is that I could, of course, take the result (for example) of the first of the above 3 queries and manipulate it slightly in the application before serving it to the client, but if PostgreSQL can create the final JSON object directly, it would be simpler, because I still have not included any dependency on any JSON library in my application.
+json postgresql
+shareedit
+asked Jun 3 '14 at 2:40
+engineerX
+6981815
+
+    1
+    +1, didn't psql has this feature – Fabricator Jun 3 '14 at 2:44
+    1
+    PG 9.4, now available in beta 1 release, has improved support for JSON, including binary I/O. If you are on a development machine you might want to check it out. – Patrick Jun 3 '14 at 2:57
+    @Patrick: thank you, it does look like json_object() is a new function in 9.4 and I would try something like SELECT json_object(array_agg(t.a),array_agg(t.b)) FROM t , if I had it – engineerX Jun 3 '14 at 4:28
+
+add a comment
+2 Answers
+active
+oldest
+votes
+
+¿No encuentras la respuesta? Pregunta en Stack Overflow en español.
+✕
+158
+TL;DR
+
+SELECT json_agg(t) FROM t
+
+for a JSON array of objects, and
+
+SELECT
+    json_build_object(
+        'a', json_agg(t.a),
+        'b', json_agg(t.b)
+    )
+FROM t
+
+for a JSON object of arrays.
+List of objects
+
+This section describes how to generate a JSON array of objects, with each row being converted to a single object. The result looks like this:
+
+[{"a":1,"b":"value1"},{"a":2,"b":"value2"},{"a":3,"b":"value3"}]
+
+9.3 and up
+
+The json_agg function produces this result out of the box. It automatically figures out how to convert its input into JSON and aggregates it into an array.
+
+SELECT json_agg(t) FROM t
+
+There is no jsonb (introduced in 9.4) version of json_agg. You can either aggregate the rows into an array and then convert them:
+
+SELECT to_jsonb(array_agg(t)) FROM t
+
+or combine json_agg with a cast:
+
+SELECT json_agg(t)::jsonb FROM t
+
+My testing suggests that aggregating them into an array first is a little faster. I suspect that this is because the cast has to parse the entire JSON result.
+9.2
+
+9.2 does not have the json_agg or to_json functions, so you need to use the older array_to_json:
+
+SELECT array_to_json(array_agg(t)) FROM t
+
+You can optionally include a row_to_json call in the query:
+
+SELECT array_to_json(array_agg(row_to_json(t))) FROM t
+
+This converts each row to a JSON object, aggregates the JSON objects as an array, and then converts the array to a JSON array.
+
+I wasn't able to discern any significant performance difference between the two.
+Object of lists
+
+This section describes how to generate a JSON object, with each key being a column in the table and each value being an array of the values of the column. It's the result that looks like this:
+
+{"a":[1,2,3], "b":["value1","value2","value3"]}
+
+9.5 and up
+
+We can leverage the json_build_object function:
+
+SELECT
+    json_build_object(
+        'a', json_agg(t.a),
+        'b', json_agg(t.b)
+    )
+FROM t
+
+You can also aggregate the columns, creating a single row, and then convert that into an object:
+
+SELECT to_json(r)
+FROM (
+    SELECT
+        json_agg(t.a) AS a,
+        json_agg(t.b) AS b
+    FROM t
+) r
+
+Note that aliasing the arrays is absolutely required to ensure that the object has the desired names.
+
+Which one is clearer is a matter of opinion. If using the json_build_object function, I highly recommend putting one key/value pair on a line to improve readability.
+
+You could also use array_agg in place of json_agg, but my testing indicates that json_agg is slightly faster.
+
+There is no jsonb version of the json_build_object function. You can aggregate into a single row and convert:
+
+SELECT to_jsonb(r)
+FROM (
+    SELECT
+        array_agg(t.a) AS a,
+        array_agg(t.b) AS b
+    FROM t
+) r
+
+Unlike the other queries for this kind of result, array_agg seems to be a little faster when using to_jsonb. I suspect this is due to overhead parsing and validating the JSON result of json_agg.
+
+Or you can use an explicit cast:
+
+SELECT
+    json_build_object(
+        'a', json_agg(t.a),
+        'b', json_agg(t.b)
+    )::jsonb
+FROM t
+
+The to_jsonb version allows you to avoid the cast and is faster, according to my testing; again, I suspect this is due to overhead of parsing and validating the result.
+9.4 and 9.3
+
+The json_build_object function was new to 9.5, so you have to aggregate and convert to an object in previous versions:
+
+SELECT to_json(r)
+FROM (
+    SELECT
+        json_agg(t.a) AS a,
+        json_agg(t.b) AS b
+    FROM t
+) r
+
+or
+
+SELECT to_jsonb(r)
+FROM (
+    SELECT
+        array_agg(t.a) AS a,
+        array_agg(t.b) AS b
+    FROM t
+) r
+
+depending on whether you want json or jsonb.
+
+(9.3 does not have jsonb.)
+9.2
+
+In 9.2, not even to_json exists. You must use row_to_json:
+
+SELECT row_to_json(r)
+FROM (
+    SELECT
+        array_agg(t.a) AS a,
+        array_agg(t.b) AS b
+    FROM t
+) r
+
+Documentation
+
+Find the documentation for the JSON functions in JSON functions.
+
+json_agg is on the aggregate functions page.
+Design
+
+If performance is important, ensure you benchmark your queries against your own schema and data, rather than trust my testing.
+
+Whether it's a good design or not really depends on your specific application. In terms of maintainability, I don't see any particular problem. It simplifies your app code and means there's less to maintain in that portion of the app. If PG can give you exactly the result you need out of the box, the only reason I can think of to not use it would be performance considerations. Don't reinvent the wheel and all.
+Nulls
+
+Aggregate functions typically give back NULL when they operate over zero rows. If this is a possibility, you might want to use COALESCE to avoid them. A couple of examples:
+
+SELECT COALESCE(json_agg(t), '[]'::json) FROM t
+
+Or
+
+SELECT to_jsonb(COALESCE(array_agg(t), ARRAY[]::t[])) FROM t
+
+Credit to Hannes Landeholm for pointing this out
+shareedit
+edited 2 days ago
+answered Jun 3 '14 at 2:59
+jpmc26
+14.9k757103
+
+    2
+    Thank you for your answer. You inspired me to find the answer to my second question, SELECT row_to_json(row(array_agg(t.a),array_agg(t.b))) FROM t , though the result has "f1" and "f2" as labels instead of a and b. – engineerX Jun 3 '14 at 4:06 
+
+@engineerX I've expanded my answer. – jpmc26 Jun 3 '14 at 4:29
+3
+It can be undesirable in some cases to get NULL back instead of an empty JSON array when the inner select (from t) returns zero rows. This is caused by aggregate functions always returning NULL when the selecting over no rows and solvable by coalesce: array_to_json(coalesce(array_agg(t), array[]::record[])). – Hannes Landeholm Mar 3 '15 at 13:58
+
+    3
+    you can use to_json instead of row_to_json and array_to_json – itsnikolay Dec 16 '17 at 18:05
+
+add a comment
+10
+
+Also if you want selected field from table and aggregated then as array .
+
+SELECT json_agg(json_build_object('data_a',a,
+                                  'data_b',b,
+))  from t;
+
+The result will come .
+
+ [{'data_a':1,'data_b':'value1'}
+  {'data_a':2,'data_b':'value2'}]
+
+shareedit
+
+select to_json(r) as prueba
+from (select * from containers where exto_cont !=0)r
+
