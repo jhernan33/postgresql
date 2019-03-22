@@ -1,0 +1,1 @@
+﻿alter table zones add column cout_zone geography(POLYGON,4326) ;

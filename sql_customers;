@@ -1,0 +1,4 @@
+﻿select count(* ) from customers where;
+
+select * from customers where cust_actu = true order by cust_dnic;
+select * from status where sta_id in(7,8)

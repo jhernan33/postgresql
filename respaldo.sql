@@ -1,0 +1,1 @@
+/usr/bin/pg_dump --host 172.17.0.2 --port 5432 --username "postgres" --no-password  --format custom --inserts --column-inserts --verbose --file "/home/zippyttech/bd/2018/inputs.backup" --table "process.inputs" "tracking"

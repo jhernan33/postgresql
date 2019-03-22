@@ -1,0 +1,202 @@
+﻿--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.5 (Ubuntu 10.5-1.pgdg16.04+1)
+-- Dumped by pg_dump version 10.5 (Ubuntu 10.5-1.pgdg16.04+1)
+
+-- Started on 2018-09-20 11:57:07 -04
+
+-- SET statement_timeout = 0;
+-- SET lock_timeout = 0;
+-- SET idle_in_transaction_session_timeout = 0;
+-- SET client_encoding = 'UTF8';
+-- SET standard_conforming_strings = on;
+-- SELECT pg_catalog.set_config('search_path', '', false);
+-- SET check_function_bodies = false;
+-- SET client_min_messages = warning;
+-- SET row_security = off;
+-- 
+-- SET default_tablespace = '';
+-- 
+-- SET default_with_oids = false;
+
+--
+-- TOC entry 207 (class 1259 OID 91194)
+-- Name: category_repairs; Type: TABLE; Schema: public; Owner: postgres
+--
+
+-- CREATE TABLE public.category_repairs (
+--     codi_care bigint NOT NULL,
+--     desc_care character varying(200) NOT NULL,
+--     deleted boolean DEFAULT false NOT NULL,
+--     codi_acco integer NOT NULL,
+--     codi_user integer NOT NULL,
+--     created_at timestamp without time zone,
+--     updated_at timestamp without time zone
+-- );
+-- 
+-- 
+-- ALTER TABLE public.category_repairs OWNER TO postgres;
+-- 
+-- --
+-- -- TOC entry 3014 (class 0 OID 0)
+-- -- Dependencies: 207
+-- -- Name: TABLE category_repairs; Type: COMMENT; Schema: public; Owner: postgres
+-- --
+-- 
+-- COMMENT ON TABLE public.category_repairs IS 'Registro de Categoria de Evaluaciones';
+-- 
+-- 
+-- --
+-- -- TOC entry 3015 (class 0 OID 0)
+-- -- Dependencies: 207
+-- -- Name: COLUMN category_repairs.codi_care; Type: COMMENT; Schema: public; Owner: postgres
+-- --
+-- 
+-- COMMENT ON COLUMN public.category_repairs.codi_care IS 'Codigo de la Categoria de la Evaluacion';
+-- 
+-- 
+-- --
+-- -- TOC entry 3016 (class 0 OID 0)
+-- -- Dependencies: 207
+-- -- Name: COLUMN category_repairs.desc_care; Type: COMMENT; Schema: public; Owner: postgres
+-- --
+-- 
+-- COMMENT ON COLUMN public.category_repairs.desc_care IS 'Nombre de la Categoria de la Evaluacion';
+-- 
+-- 
+-- --
+-- -- TOC entry 3017 (class 0 OID 0)
+-- -- Dependencies: 207
+-- -- Name: COLUMN category_repairs.deleted; Type: COMMENT; Schema: public; Owner: postgres
+-- --
+-- 
+-- COMMENT ON COLUMN public.category_repairs.deleted IS 'Borrado Logico de la Categoria de la Evaluacion';
+-- 
+-- 
+-- --
+-- -- TOC entry 3018 (class 0 OID 0)
+-- -- Dependencies: 207
+-- -- Name: COLUMN category_repairs.codi_acco; Type: COMMENT; Schema: public; Owner: postgres
+-- --
+-- 
+-- COMMENT ON COLUMN public.category_repairs.codi_acco IS 'Codigo de la Cuenta';
+-- 
+-- 
+-- --
+-- -- TOC entry 3019 (class 0 OID 0)
+-- -- Dependencies: 207
+-- -- Name: COLUMN category_repairs.codi_user; Type: COMMENT; Schema: public; Owner: postgres
+-- --
+-- 
+-- COMMENT ON COLUMN public.category_repairs.codi_user IS 'Codigo del Usuario';
+-- 
+-- 
+-- --
+-- -- TOC entry 3020 (class 0 OID 0)
+-- -- Dependencies: 207
+-- -- Name: COLUMN category_repairs.created_at; Type: COMMENT; Schema: public; Owner: postgres
+-- --
+-- 
+-- COMMENT ON COLUMN public.category_repairs.created_at IS 'Fecha de Creacion de la Categoria de Evaluacion';
+-- 
+-- 
+-- --
+-- -- TOC entry 3021 (class 0 OID 0)
+-- -- Dependencies: 207
+-- -- Name: COLUMN category_repairs.updated_at; Type: COMMENT; Schema: public; Owner: postgres
+-- --
+-- 
+-- COMMENT ON COLUMN public.category_repairs.updated_at IS 'Fecha de Actualizacion de la Categoria de Evaluacion';
+-- 
+-- 
+-- --
+-- -- TOC entry 206 (class 1259 OID 91192)
+-- -- Name: category_repairs_codi_care_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- --
+-- 
+-- CREATE SEQUENCE public.category_repairs_codi_care_seq
+--     START WITH 1
+--     INCREMENT BY 1
+--     NO MINVALUE
+--     NO MAXVALUE
+--     CACHE 1;
+-- 
+-- 
+-- ALTER TABLE public.category_repairs_codi_care_seq OWNER TO postgres;
+-- 
+-- --
+-- -- TOC entry 3022 (class 0 OID 0)
+-- -- Dependencies: 206
+-- -- Name: category_repairs_codi_care_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- --
+-- 
+-- ALTER SEQUENCE public.category_repairs_codi_care_seq OWNED BY public.category_repairs.codi_care;
+-- 
+-- 
+-- --
+-- -- TOC entry 2880 (class 2604 OID 91197)
+-- -- Name: category_repairs codi_care; Type: DEFAULT; Schema: public; Owner: postgres
+-- --
+-- 
+-- ALTER TABLE ONLY public.category_repairs ALTER COLUMN codi_care SET DEFAULT nextval('public.category_repairs_codi_care_seq'::regclass);
+-- 
+
+--
+-- TOC entry 3008 (class 0 OID 91194)
+-- Dependencies: 207
+-- Data for Name: category_repairs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (1, 'Diaria', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (2, 'Semanal', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (3, 'Quincenal', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (4, 'Mensual', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (5, 'Bimensual', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (6, 'Trimestral', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (7, 'Semestral', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (8, 'Anual', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+INSERT INTO public.category_repairs (codi_care, desc_care, deleted, codi_acco, codi_user, created_at, updated_at) VALUES (9, 'Otra', false, 1, 1, '2018-09-05 09:06:53', '2018-09-05 09:06:53');
+
+
+--
+-- TOC entry 3023 (class 0 OID 0)
+-- Dependencies: 206
+-- Name: category_repairs_codi_care_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+-- SELECT pg_catalog.setval('public.category_repairs_codi_care_seq', 1, false);
+-- 
+-- 
+-- --
+-- -- TOC entry 2883 (class 2606 OID 91200)
+-- -- Name: category_repairs pk_public_category_repairs_codi_care; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- --
+-- 
+-- ALTER TABLE ONLY public.category_repairs
+--     ADD CONSTRAINT pk_public_category_repairs_codi_care PRIMARY KEY (codi_care);
+-- 
+-- 
+-- --
+-- -- TOC entry 2884 (class 1259 OID 91201)
+-- -- Name: public_category_repairs_codi_acco_index; Type: INDEX; Schema: public; Owner: postgres
+-- --
+-- 
+-- CREATE INDEX public_category_repairs_codi_acco_index ON public.category_repairs USING btree (codi_acco);
+-- 
+-- 
+-- --
+-- -- TOC entry 2885 (class 1259 OID 91202)
+-- -- Name: public_category_repairs_codi_user_index; Type: INDEX; Schema: public; Owner: postgres
+-- --
+-- 
+-- CREATE INDEX public_category_repairs_codi_user_index ON public.category_repairs USING btree (codi_user);
+-- 
+-- 
+-- -- Completed on 2018-09-20 11:57:07 -04
+-- 
+-- --
+-- -- PostgreSQL database dump complete
+-- --
+-- 

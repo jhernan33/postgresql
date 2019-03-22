@@ -1,0 +1,9 @@
+﻿select * from drivers;
+select dri_dni,dri_lic from drivers;
+update drivers set veh_pla ='AAA-123' where dri_dni <>'1879152000';
+
+select * from vehicles;
+
+select * from process.operations;
+select * from process.operations where oper_codi = 13;
+select * from status;

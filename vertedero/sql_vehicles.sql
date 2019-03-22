@@ -1,0 +1,1 @@
+﻿select distinct vehiculo_id,placa  from vehicle order by placa;
